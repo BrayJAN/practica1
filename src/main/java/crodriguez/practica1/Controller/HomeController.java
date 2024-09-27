@@ -1,17 +1,17 @@
 package crodriguez.practica1.Controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import crodriguez.practica1.Models.Cerradura;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import java.util.Map;
 
 @Controller
 public class HomeController {
 
-    // Inyectar Cerradura
     @Autowired
     private Cerradura cerradura;
 
@@ -20,18 +20,25 @@ public class HomeController {
         return "index";
     }
 
-    @RequestMapping("/fibonacci/{number}")
-    public String fibonacci(@PathVariable("number") int number, Model model) {
+    @RequestMapping("/cerradura/kleene/{number}")
+    @ResponseBody
+    public Map<String, String> cerraduraKleene(@PathVariable("number") int number) {
 
         if (number < 0) {
-            model.addAttribute("error", "El número no puede ser negativo.");
-            return "error";
+            return Map.of("error", "El número no puede ser negativo.");
         }
 
-        // Calcular Fibonacci
-        int result = cerradura.fibonacci(number);
-        model.addAttribute("result", result);
-        return "fibonacci"; 
+        return cerradura.kleeneCerradura(number);
+    }
+
+    @RequestMapping("/cerradura/positiva/{number}")
+    @ResponseBody
+    public Map<String, String> cerraduraPositiva(@PathVariable("number") int number) {
+
+        if (number < 0) {
+            return Map.of("error", "El número no puede ser negativo.");
+        }
+
+        return cerradura.kleeneClausuraPositiva(number);
     }
 }
-

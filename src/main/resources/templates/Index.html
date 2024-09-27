@@ -1,37 +1,107 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Página Fibonacci</title>
-        <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
-        <style>
-            body {
-                background-color: #f8f9fa;
-            }
-            .jumbotron {
-                background-color: #007bff;
-                color: white;
-                padding: 2rem;
-                border-radius: 10px;
-            }
-            .container {
-                margin-top: 50px;
-            }
-            .btn-custom {
-                background-color: #28a745;
-                color: white;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <div class="jumbotron text-center">
-                <h1 class="display-4">¡Bienvenido a nuestra página web!</h1>
-                <p class="lead">La cual nos ayudará a encontrar el Fibonacci de un número al igual que su doble.</p>
-                <hr class="my-4">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cerradura kleene</title>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .jumbotron {
+            background-color: #007bff;
+            color: white;
+            padding: 2rem;
+            border-radius: 10px;
+        }
+        .container {
+            margin-top: 50px;
+        }
+        .btn-custom {
+            background-color: #28a745;
+            color: white;
+        }
+        .result-box {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="jumbotron text-center">
+            <h1 class="display-4">¡Bienvenido a nuestra página web!</h1>
+            <p class="lead">La cual nos ayudará a encontrar la cerradura de kleene de un número dado.</p>
+            <hr class="my-4">
+
+            <form id="cerraduraForm">
+                <div class="form-group">
+                    <label for="inputNumber">Introduce un número:</label>
+                    <input type="number" class="form-control" id="inputNumber" name="inputNumber" placeholder="Escribe un número" required>
+                </div>
+                <div class="form-group">
+                    <button type="button" class="btn btn-primary" id="kleeneButton">Cerradura de Kleene</button>
+                    <button type="button" class="btn btn-secondary" id="kleenePositivaButton">Cerradura de Kleene Positiva</button>
+                </div>
+            </form>
+
+            <div id="result" class="result-box" style="display: none;">
+                <h4>Resultado:</h4>
+                <p id="resultText"></p>
             </div>
         </div>
-        <script th:src="@{/js/bootstrap.min.js}"></script>
-    </body>
+    </div>
+
+    <script>
+        
+        function makeRequest(url) {
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error en la solicitud');
+                    }
+                    return response.json(); 
+                })
+                .then(data => {
+                    const resultBox = document.getElementById('result');
+                    const resultText = document.getElementById('resultText');
+                    
+                    if (data['Σ^*']) {
+                        resultText.textContent = data['Σ^*'];
+                    } else if (data['Σ^+']) {
+                        resultText.textContent = data['Σ^+'];
+                    } else if (data.error) {
+                        resultText.textContent = data.error;
+                    }
+                    resultBox.style.display = 'block';
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    const resultText = document.getElementById('resultText');
+                    resultText.textContent = 'Ocurrió un error.';
+                });
+        }
+
+        document.getElementById('kleeneButton').addEventListener('click', function () {
+            const number = document.getElementById('inputNumber').value;
+            if (number >= 0) {
+                makeRequest('/cerradura/kleene/' + number);
+            } else {
+                document.getElementById('resultText').textContent = 'El número no puede ser negativo.';
+                document.getElementById('result').style.display = 'block';
+            }
+        });
+
+        document.getElementById('kleenePositivaButton').addEventListener('click', function () {
+            const number = document.getElementById('inputNumber').value;
+            if (number >= 0) {
+                makeRequest('/cerradura/positiva/' + number);
+            } else {
+                document.getElementById('resultText').textContent = 'El número no puede ser negativo.';
+                document.getElementById('result').style.display = 'block';
+            }
+        });
+    </script>
+</body>
 </html>
